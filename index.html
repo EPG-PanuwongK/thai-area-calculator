@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ให้ข้าวลองดู</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+            padding-bottom: 40px;
+        }
+        .calculator-container {
+            max-width: 750px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .result-box {
+            background-color: #e9f7ef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        h2 {
+            color: #3498db;
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .form-label {
+            font-weight: 500;
+        }
+        .result-row {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        .thai-units {
+            background-color: #f0f8ff;
+        }
+        .metric-units {
+            background-color: #f0fff0;
+        }
+        .imperial-units {
+            background-color: #fff0f0;
+        }
+        .unit-header {
+            font-weight: bold;
+            background-color: #eee;
+            padding: 5px 10px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+        .nav-tabs .nav-link {
+            color: #495057;
+        }
+        .nav-tabs .nav-link.active {
+            color: #3498db;
+            font-weight: bold;
+        }
+        .tab-content {
+            border-left: 1px solid #dee2e6;
+            border-right: 1px solid #dee2e6;
+            border-bottom: 1px solid #dee2e6;
+            padding: 20px;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="calculator-container">
+            <h1>โปรแกรมคำนวณพื้นที่และแปลงหน่วย (จะเปลี่ยนชื่อและวิธีคำนวนใหม่ให้ มันจะหน้าตาประมาณนี้)</h1>
+            
+            <ul class="nav nav-tabs" id="calculatorTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="rectangle-tab" data-bs-toggle="tab" data-bs-target="#rectangle" type="button" role="tab" aria-controls="rectangle" aria-selected="true">สี่เหลี่ยม</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="converter-tab" data-bs-toggle="tab" data-bs-target="#converter" type="button" role="tab" aria-controls="converter" aria-selected="false">แปลงหน่วย</button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="calculatorTabsContent">
+                <!-- แท็บคำนวณพื้นที่สี่เหลี่ยม -->
+                <div class="tab-pane fade show active" id="rectangle" role="tabpanel" aria-labelledby="rectangle-tab">
+                    <h2>คำนวณพื้นที่สี่เหลี่ยม</h2>
+                    
+                    <div class="mb-3">
+                        <label for="width" class="form-label">ความกว้าง (เมตร)</label>
+                        <input type="number" class="form-control" id="width" placeholder="กรุณาป้อนความกว้าง" step="any">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="length" class="form-label">ความยาว (เมตร)</label>
+                        <input type="number" class="form-control" id="length" placeholder="กรุณาป้อนความยาว" step="any">
+                    </div>
+                    
+                    <button class="btn btn-primary w-100" onclick="calculateRectangle()">คำนวณ</button>
+                    
+                    <div id="rectangle-results" class="result-box" style="display: none;">
+                        <div class="unit-header">ผลการคำนวณ</div>
+                        <div class="metric-units">
+                            <div class="row result-row">
+                                <div class="col-7">พื้นที่สี่เหลี่ยม:</div>
+                                <div class="col-5 text-end" id="area-result">0 ตร.ม.</div>
+                            </div>
+                            <div class="row result-row">
+                                <div class="col-7">เส้นรอบรูป:</div>
+                                <div class="col-5 text-end" id="perimeter-result">0 เมตร</div>
+                            </div>
+                        </div>
+                        
+                        <div class="unit-header mt-3">พื้นที่ในหน่วยวัดไทย</div>
+                        <div class="thai-units">
+                            <div class="row result-row">
+                                <div class="col-7">ตารางวา:</div>
+                                <div class="col-5 text-end" id="rect-squareWah">0 ตารางวา</div>
+                            </div>
+                            <div class="row result-row">
+                                <div class="col-7">งาน:</div>
+                                <div class="col-5 text-end" id="rect-ngan">0 งาน</div>
+                            </div>
+                            <div class="row result-row">
+                                <div class="col-7">ไร่:</div>
+                                <div class="col-5 text-end" id="rect-rai">0 ไร่</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- แท็บแปลงหน่วย -->
+                <div class="tab-pane fade" id="converter" role="tabpanel" aria-labelledby="converter-tab">
+                    <h2>แปลงหน่วยพื้นที่</h2>
+                    
+                    <div class="mb-4">
+                        <label for="squareMeter" class="form-label">พื้นที่ (ตารางเมตร)</label>
+                        <input type="number" class="form-control" id="squareMeter" placeholder="กรุณาป้อนพื้นที่ในหน่วยตารางเมตร" step="any">
+                    </div>
+                    
+                    <button class="btn btn-success w-100" onclick="convertArea()">แปลงหน่วย</button>
+                    
+                    <div id="converter-results" class="result-box" style="display: none;">
+                        <div class="unit-header">หน่วยวัดไทย</div>
+                        <div class="thai-units">
+                            <div class="row result-row">
+                                <div class="col-7">ตารางวา:</div>
+                                <div class="col-5 text-end" id="squareWah">0 ตารางวา</div>
+                            </div>
+                            <div class="row result-row">
+                                <div class="col-7">งาน:</div>
+                                <div class="col-5 text-end" id="ngan">0 งาน</div>
+                            </div>
+                            <div class="row result-row">
+                                <div class="col-7">ไร่:</div>
+                                <div class="col-5 text-end" id="rai">0 ไร่</div>
+                            </div>
+                        </div>
+                        
+                        <div class="unit-header">หน่วยวัดเมตริก</div>
+                        <div class="metric-units">
+                            <div class="row result-row">
+                                <div class="col-7">ตารางเซนติเมตร:</div>
+                                <div class="col-5 text-end" id="squareCm">0 ตร.ซม.</div>
+                            </div>
+                            <div class="row result-row">
+                                <div class="col-7">ตารางเมตร:</div>
+                                <div class="col-5 text-end" id="squareM">0 ตร.ม.</div>
+                            </div>
+                            <div class="row result-row">
+                                <div class="col-7">ตารางกิโลเมตร:</div>
+                                <div class="col-5 text-end" id="squareKm">0 ตร.กม.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="unit-header">หน่วยวัดอังกฤษ</div>
+                        <div class="imperial-units">
+                            <div class="row result-row">
+                                <div class="col-7">ตารางนิ้ว:</div>
+                                <div class="col-5 text-end" id="squareInch">0 ตร.นิ้ว</div>
+                            </div>
+                            <div class="row result-row">
+                                <div class="col-7">ตารางฟุต:</div>
+                                <div class="col-5 text-end" id="squareFoot">0 ตร.ฟุต</div>
+                            </div>
+                            <div class="row result-row">
+                                <div class="col-7">ตารางหลา (ตารางยาร์ด):</div>
+                                <div class="col-5 text-end" id="squareYard">0 ตร.หลา</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-7">เอเคอร์:</div>
+                                <div class="col-5 text-end" id="acre">0 เอเคอร์</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <p class="text-muted">สร้างโดย: PanuwongK</p>
+            <p class="text-muted small">เวอร์ชัน 1.0 | Free : Panadda</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // ฟังก์ชันคำนวณพื้นที่และเส้นรอบรูปสี่เหลี่ยม
+        function calculateRectangle() {
+            // รับค่าจาก input
+            const width = parseFloat(document.getElementById('width').value) || 0;
+            const length = parseFloat(document.getElementById('length').value) || 0;
+            
+            // คำนวณพื้นที่และเส้นรอบรูป
+            const area = width * length;
+            const perimeter = 2 * (width + length);
+            
+            // แสดงผลลัพธ์
+            document.getElementById('area-result').innerText = area.toFixed(2) + ' ตร.ม.';
+            document.getElementById('perimeter-result').innerText = perimeter.toFixed(2) + ' เมตร';
+            
+            // คำนวณพื้นที่ในหน่วยไทย
+            const squareWah = area / 4; // 1 ตารางวา = 4 ตารางเมตร
+            const ngan = squareWah / 100; // 1 งาน = 100 ตารางวา
+            const rai = ngan / 4; // 1 ไร่ = 4 งาน
+            
+            // แสดงผลลัพธ์ในหน่วยไทย
+            document.getElementById('rect-squareWah').innerText = squareWah.toFixed(2) + ' ตารางวา';
+            document.getElementById('rect-ngan').innerText = ngan.toFixed(2) + ' งาน';
+            document.getElementById('rect-rai').innerText = rai.toFixed(2) + ' ไร่';
+            
+            // แสดงกล่องผลลัพธ์
+            document.getElementById('rectangle-results').style.display = 'block';
+        }
+        
+        // ฟังก์ชันแปลงหน่วยพื้นที่
+        function convertArea() {
+            // รับค่าจาก input
+            const squareMeter = parseFloat(document.getElementById('squareMeter').value) || 0;
+            
+            // คำนวณหน่วยวัดไทย
+            const squareWah = squareMeter / 4; // 1 ตารางวา = 4 ตารางเมตร
+            const ngan = squareWah / 100; // 1 งาน = 100 ตารางวา
+            const rai = ngan / 4; // 1 ไร่ = 4 งาน
+            
+            // คำนวณหน่วยวัดเมตริก
+            const squareCm = squareMeter * 10000; // 1 ตร.ม. = 10,000 ตร.ซม.
+            const squareKm = squareMeter / 1000000; // 1 ตร.กม. = 1,000,000 ตร.ม.
+            
+            // คำนวณหน่วยวัดอังกฤษ
+            const squareFoot = squareMeter * 10.7639; // 1 ตร.ม. = 10.7639 ตร.ฟุต
+            const squareInch = squareFoot * 144; // 1 ตร.ฟุต = 144 ตร.นิ้ว
+            const squareYard = squareFoot / 9; // 1 ตร.หลา = 9 ตร.ฟุต
+            const acre = squareMeter / 4046.86; // 1 เอเคอร์ = 4,046.86 ตร.ม.
+            
+            // แสดงผลลัพธ์
+            // หน่วยวัดไทย
+            document.getElementById('squareWah').innerText = squareWah.toFixed(2) + ' ตารางวา';
+            document.getElementById('ngan').innerText = ngan.toFixed(2) + ' งาน';
+            document.getElementById('rai').innerText = rai.toFixed(2) + ' ไร่';
+            
+            // หน่วยวัดเมตริก
+            document.getElementById('squareCm').innerText = squareCm.toFixed(2) + ' ตร.ซม.';
+            document.getElementById('squareM').innerText = squareMeter.toFixed(2) + ' ตร.ม.';
+            document.getElementById('squareKm').innerText = squareKm.toFixed(6) + ' ตร.กม.';
+            
+            // หน่วยวัดอังกฤษ
+            document.getElementById('squareInch').innerText = squareInch.toFixed(2) + ' ตร.นิ้ว';
+            document.getElementById('squareFoot').innerText = squareFoot.toFixed(2) + ' ตร.ฟุต';
+            document.getElementById('squareYard').innerText = squareYard.toFixed(2) + ' ตร.หลา';
+            document.getElementById('acre').innerText = acre.toFixed(4) + ' เอเคอร์';
+            
+            // แสดงผลลัพธ์
+            document.getElementById('converter-results').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
